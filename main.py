@@ -10,7 +10,7 @@ def load_memory():
     if os.path.exists(MEM_FILE):
         with open(MEM_FILE, "r") as f:
             return json.load(f)
-    return {}
+    return {"chat": []}
 
 def save_memory(data):
     with open(MEM_FILE, "w") as f:
@@ -22,22 +22,26 @@ memoria = load_memory()
 def jarvis(text: str):
     text = text.lower()
 
-    # guardar nombre
-    if "mi nombre es " in text:
-        nombre = text.replace("mi nombre es ", "")
-        memoria["nombre"] = nombre
-        save_memory(memoria)
-        return f"Entendido, {nombre}."
+    # guardar mensaje en historial
+    memoria["chat"].append({"user": text})
 
-    # recuperar nombre
-    if "como me llamo" in text:
-        return f"Te llamas {memoria.get('nombre', 'no lo sé aún')}."
-
-    # saludo
+    # lógica básica de contexto
     if "hola" in text:
-        return "Sistema activo."
+        response = "Sistema activo."
 
-    return "No entendido."
+    elif "como me llamo" in text:
+        response = "Aún no tengo tu nombre guardado."
+
+    elif "historial" in text:
+        response = str(memoria["chat"][-5:])  # últimos 5 mensajes
+
+    else:
+        response = "Mensaje procesado."
+
+    memoria["chat"].append({"jarvis": response})
+    save_memory(memoria)
+
+    return response
 
 
 @app.get("/")
