@@ -21,4 +21,4 @@ def home():
 
 @app.get("/ask")
 def ask(text: str):
-    return {"response": jarvis(text)}
+    return {"response": jarvis()o}
